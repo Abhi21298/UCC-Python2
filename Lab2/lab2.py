@@ -56,10 +56,10 @@ to_english("My favourite number is 017 and 090!")
 def harvest_emails(s):
     if s==None or s=="":
         return ""
+    
     list_emails = []
-
     #pattern = r"(^|\b)([a-zA-Z0-9_](\.)?)+[a-zA-Z0-9_]+@(([a-z0-9]+(\-)?[a-z0-9]+)+\.)+[a-z0-9]+(\-)?[a-z0-9]+[^\-]($|\b)"
-    pattern = r"^[a-zA-Z0-9_]+(\.[a-zA-Z0-9_]+)*@[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9](\.[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])+$"
+    pattern = r"^(?P<localpart>[a-zA-Z0-9_]+(\.[a-zA-Z0-9_]+)*)@(?P<domain>[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9](\.[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])+)$"
     regexp = re.compile(pattern)
     words = list(s.split(' '))
 
@@ -71,8 +71,25 @@ def harvest_emails(s):
     #for m in regexp.finditer(s):
     #    list_emails.append(m.group())
     
-    return list_emails
-    
+    final_list = custom_sort(list_emails)
+    return final_list
 
-print(harvest_emails("my name is J.P.Murphy3@c-s.ucc.ie and J.P.Murphy3@c-s.ucc.ie. and however this is invalid \
-                     J.P.Murphy3@c-s.ucc.ie  "))
+def custom_sort(list_emails):
+    
+    track = {}
+    for email in list_emails:
+        domain = email.split('@')[1]
+        if domain in track:
+            track[domain] += [email]
+        else:
+            track[domain] = [email]
+            #domains[domain].sort()
+
+    domain_sort = sorted(track.keys())
+    final_emails = []
+    for d in domain_sort:
+        [final_emails.append(i) for i in sorted(track[d])]
+    return final_emails
+
+print(harvest_emails("my name is J.P.Murphy3@c-s.ucc.ie and A.P.Murphy3@ece.ucc.ie and however this is invalid \
+                     J.P.Murphy3@c-s-.ucc.ie  "))
