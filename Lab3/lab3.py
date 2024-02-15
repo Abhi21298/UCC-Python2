@@ -7,7 +7,7 @@ import re
 def setup(submissions, assignment):
     pattern = str("[a-z]+_"+assignment)
     regexp = re.compile(pattern)
-    if os.path.exists(submissions):
+    if os.path.exists(submissions) and os.path.isdir(submissions):
         os.chdir(submissions)
         contents = os.listdir(submissions)
         for item in contents:
